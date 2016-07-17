@@ -1,0 +1,22 @@
+{
+  "name": "cloudbot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "demo.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/timfulmer/cloudbot.git"
+  },
+  "author": "timfulmer",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/timfulmer/cloudbot/issues"
+  },
+  "homepage": "https://github.com/timfulmer/cloudbot#readme",
+  "dependencies": {
+    "aws-sdk": "^2.4.6"
+  }
+}
