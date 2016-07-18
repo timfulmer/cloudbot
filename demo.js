@@ -9,7 +9,7 @@ var cloudFormation=new AWS.CloudFormation(),
       "VPC": {
         "Type": "AWS::EC2::VPC",
         "Properties": {
-          "CidrBlock": "{{VpcAddressBlock}}",
+          "CidrBlock": "10.0.0.0/16",
           "Tags": [{"Key": "Application", "Value": {"Ref": "AWS::StackId"}}]
         }
       },
@@ -139,16 +139,37 @@ var cloudFormation=new AWS.CloudFormation(),
           "VersionLabel" : { "Ref" : "ProducerApplicationVersion" }
         }
       }
+    },
+    "Outputs" : {
+      "ProducerURL" : {
+        "Description": "Endpoint URL of the producer ElasticBeanstalk instance",
+        "Value" : { "Fn::GetAtt" : [ "ConsumerEnvironment", "EndpointURL" ]}
+      },
+      "ConsumerURL" : {
+        "Description": "Endpoint URL of the consumer ElasticBeanstalk instance",
+        "Value" : { "Fn::GetAtt" : [ "ProducerEnvironment", "EndpointURL" ]}
+      }
     }
   },
   template={
-    "StackName": "DemoStack",
+    "StackName": "DemoStack3",
     "TemplateBody":JSON.stringify(templateBody)
   };
-templateBody.Resources.VPC.Properties.CidrBlock=process.env.VPC_CIDR_BLOCK;
+function checkStack(){
+  cloudFormation.describeStacks({StackName:"DemoStack3"},function(err,data){
+    if(err){
+      return console.log('Error querying CloudFormation stack:\n%s',err.stack);
+    }
+    if(data.Stacks[0].StackStatus!=='CREATE_COMPLETE'){
+      return setTimeout(checkStack,30000);
+    }
+    console.log('Retrieved stack information:\n%s',JSON.stringify(data,null,2));
+  });
+}
 cloudFormation.createStack(template,function(err, data){
   if(err){
     return console.log('Error creating CloudFormation stack:\n%s',err.stack);
   }
   console.log('Created CloudFormation stack:\n%s',JSON.stringify(data,null,2));
+  checkStack();
 });
